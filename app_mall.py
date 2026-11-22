@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Konfigurasi halaman
 st.set_page_config(
@@ -10,19 +11,18 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# CSS Kustom untuk tema gelap (Dark Mode) yang modern & kontras jelas
+# CSS Kustom tema gelap (Dark Mode) agar teks & kartu kontras dan rapi
 st.markdown(
     """
     <style>
-        /* Hero banner gelap beraksen biru-ungu */
         .hero-box {
             background: linear-gradient(125deg, #1e293b 0%, #0f172a 55%, #1e1b4b 100%);
             border: 1px solid #334155;
             color: #f8fafc;
-            padding: 1.6rem 1.8rem;
+            padding: 1.5rem 1.8rem;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-            margin-bottom: 1.3rem;
+            margin-bottom: 1.2rem;
         }
         .hero-badge {
             display: inline-block;
@@ -33,27 +33,25 @@ st.markdown(
             border-radius: 999px;
             font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.65rem;
+            margin-bottom: 0.6rem;
         }
         .hero-title {
-            font-size: 2rem;
+            font-size: 1.95rem;
             font-weight: 800;
             color: #ffffff;
             margin: 0 0 0.35rem 0;
             line-height: 1.2;
         }
         .hero-sub {
-            font-size: 0.98rem;
+            font-size: 0.96rem;
             color: #cbd5e1;
             margin: 0;
         }
-
-        /* Kartu metrik & alur tema gelap */
         .dark-card {
             background: #161b26;
             border: 1px solid #2a3346;
             border-radius: 14px;
-            padding: 1.15rem 1.25rem;
+            padding: 1.1rem 1.25rem;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
             height: 100%;
             transition: transform 0.15s ease, border-color 0.15s ease;
@@ -69,10 +67,10 @@ st.markdown(
             margin-bottom: 0.35rem;
         }
         .card-value {
-            font-size: 1.7rem;
+            font-size: 1.65rem;
             font-weight: 800;
             color: #f8fafc;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
         .card-note {
             font-size: 0.8rem;
@@ -88,10 +86,10 @@ st.markdown(
             font-size: 0.78rem;
             padding: 0.2rem 0.65rem;
             border-radius: 8px;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0.5rem;
         }
         .step-title {
-            font-size: 1.02rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #f1f5f9;
             margin-bottom: 0.35rem;
@@ -102,8 +100,13 @@ st.markdown(
             line-height: 1.45;
             margin: 0;
         }
-
-        /* Tombol submit form */
+        .chart-heading {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
         div.stFormSubmitButton > button {
             background: linear-gradient(90deg, #2563eb, #0284c7);
             color: #ffffff;
@@ -123,12 +126,67 @@ def load_data():
     return pd.read_csv("Mall_Customers.csv")
 
 
+def buat_grafik_gender(df):
+    gender_counts = df["Gender"].value_counts()
+    labels = gender_counts.index.tolist()
+    values = gender_counts.values.tolist()
+
+    fig, (ax_bar, ax_donut) = plt.subplots(1, 2, figsize=(10, 4))
+    fig.patch.set_alpha(0.0)
+
+    # Bar chart jumlah pelanggan per gender
+    ax_bar.set_facecolor("none")
+    colors_bar = ["#3b82f6", "#ec4899"]
+    bars = ax_bar.bar(labels, values, color=colors_bar[: len(labels)], width=0.52)
+    ax_bar.set_title("Jumlah Pelanggan", color="#60a5fa", fontsize=12, fontweight="bold", pad=12)
+    ax_bar.tick_params(colors="#e2e8f0")
+    ax_bar.spines["top"].set_visible(False)
+    ax_bar.spines["right"].set_visible(False)
+    ax_bar.spines["left"].set_color("#475569")
+    ax_bar.spines["bottom"].set_color("#475569")
+    ax_bar.set_ylim(0, max(values) * 1.2)
+    for bar in bars:
+        h = bar.get_height()
+        ax_bar.text(
+            bar.get_x() + bar.get_width() / 2,
+            h + (max(values) * 0.03),
+            f"{int(h):,}",
+            ha="center",
+            va="bottom",
+            color="#f8fafc",
+            fontweight="bold",
+            fontsize=10,
+        )
+
+    # Donut chart proporsi gender
+    ax_donut.set_facecolor("none")
+    colors_donut = ["#3b82f6", "#f472b6"]
+    wedges, texts, autotexts = ax_donut.pie(
+        values,
+        labels=labels,
+        autopct="%1.1f%%",
+        startangle=140,
+        colors=colors_donut[: len(labels)],
+        pctdistance=0.72,
+        wedgeprops=dict(width=0.45, edgecolor="#0f172a", linewidth=2),
+        textprops=dict(color="#e2e8f0", fontsize=10),
+    )
+    for autotext in autotexts:
+        autotext.set_color("#ffffff")
+        autotext.set_fontweight("bold")
+        autotext.set_fontsize(9)
+    ax_donut.set_title("Proporsi", color="#60a5fa", fontsize=12, fontweight="bold", pad=12)
+
+    plt.tight_layout()
+    return fig
+
+
 # Sidebar Navigasi
 with st.sidebar:
     st.markdown("### 🧭 Navigasi Utama")
     halaman = st.radio(
         "Pilih Bagian",
-        ["Beranda & Ringkasan", "Data & Visualisasi", "Simulasi Pelanggan", "Tentang Dataset"],
+        ["Beranda & Ringkasan", "Tentang Dataset", "Data & Visualisasi", "Simulasi Pelanggan"],
         label_visibility="collapsed",
     )
     st.divider()
@@ -143,6 +201,7 @@ try:
     col_age = [c for c in df_mall.columns if "Age" in c][0]
 
     total_pelanggan = len(df_mall)
+    total_kolom = len(df_mall.columns)
     rata_pendapatan = df_mall[col_income].mean()
     rata_spending = df_mall[col_spending].mean()
     rata_usia = df_mall[col_age].mean()
@@ -162,7 +221,6 @@ try:
             unsafe_allow_html=True,
         )
 
-        # 4 Kartu Ringkasan Utama
         c1, c2, c3, c4 = st.columns(4)
         with c1:
             st.markdown(
@@ -170,7 +228,7 @@ try:
                 <div class="dark-card">
                     <div class="card-label">👥 Jumlah Pelanggan</div>
                     <div class="card-value">{total_pelanggan:,}</div>
-                    <div class="card-note">Data {len(df_mall.columns)} kolom</div>
+                    <div class="card-note">Data {total_kolom} kolom</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -256,6 +314,112 @@ try:
                 unsafe_allow_html=True,
             )
 
+    elif halaman == "Tentang Dataset":
+        st.title("Tentang Dataset")
+        st.caption("Sumber: Mall Customers Dataset (format CSV)")
+
+        tab_ringkasan, tab_kamus, tab_data, tab_kualitas = st.tabs(
+            ["Ringkasan", "Kamus Kolom", "Lihat Data", "Kualitas Data"]
+        )
+
+        with tab_ringkasan:
+            n_female = int((df_mall["Gender"] == "Female").sum()) if "Gender" in df_mall.columns else 0
+            n_male = int((df_mall["Gender"] == "Male").sum()) if "Gender" in df_mall.columns else 0
+            rasio_gender = f"{(n_female / n_male):.2f} : 1" if n_male > 0 else "-"
+
+            m1, m2, m3, m4 = st.columns(4)
+            with m1:
+                st.markdown(
+                    f"""
+                    <div class="dark-card">
+                        <div class="card-label">Baris</div>
+                        <div class="card-value">{total_pelanggan:,}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with m2:
+                st.markdown(
+                    f"""
+                    <div class="dark-card">
+                        <div class="card-label">Kolom</div>
+                        <div class="card-value">{total_kolom}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with m3:
+                st.markdown(
+                    f"""
+                    <div class="dark-card">
+                        <div class="card-label">Pelanggan Female</div>
+                        <div class="card-value">{n_female:,}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with m4:
+                st.markdown(
+                    f"""
+                    <div class="dark-card">
+                        <div class="card-label">Rasio Female : Male</div>
+                        <div class="card-value">{rasio_gender}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            st.markdown("")
+            st.markdown(
+                """
+                * **Jenis masalah:** segmentasi / klasterisasi pelanggan (*unsupervised learning*)
+                * **Fitur utama:** `Annual Income (k$)` dan `Spending Score (1-100)` (serta `Age` dan `Gender`)
+                * **Tujuan:** mengelompokkan pelanggan berdasarkan daya beli dan perilaku belanja
+                * **Catatan:** data numerik memiliki skala berbeda sehingga *scaling* disarankan sebelum klasterisasi
+                """
+            )
+
+            st.markdown("")
+            if "Gender" in df_mall.columns:
+                fig_gender = buat_grafik_gender(df_mall)
+                st.pyplot(fig_gender, use_container_width=True)
+
+        with tab_kamus:
+            kamus_df = pd.DataFrame(
+                [
+                    {"Kolom": "CustomerID", "Tipe Data": str(df_mall["CustomerID"].dtype), "Keterangan": "ID unik tiap pelanggan"},
+                    {"Kolom": "Gender", "Tipe Data": str(df_mall["Gender"].dtype), "Keterangan": "Jenis kelamin pelanggan (Male / Female)"},
+                    {"Kolom": "Age", "Tipe Data": str(df_mall[col_age].dtype), "Keterangan": "Usia pelanggan (tahun)"},
+                    {"Kolom": col_income, "Tipe Data": str(df_mall[col_income].dtype), "Keterangan": "Pendapatan tahunan dalam ribuan dolar (k$)"},
+                    {"Kolom": col_spending, "Tipe Data": str(df_mall[col_spending].dtype), "Keterangan": "Skor pengeluaran pelanggan (rentang 1–100)"},
+                ]
+            )
+            st.dataframe(kamus_df, use_container_width=True, hide_index=True)
+
+        with tab_data:
+            st.caption("Cuplikan data pelanggan mall.")
+            st.dataframe(df_mall, use_container_width=True)
+            st.markdown("#### Statistik Deskriptif Kolom Numerik")
+            st.dataframe(df_mall.describe().T, use_container_width=True)
+
+        with tab_kualitas:
+            missing_total = int(df_mall.isnull().sum().sum())
+            dup_total = int(df_mall.duplicated().sum())
+            k1, k2, k3 = st.columns(3)
+            k1.metric("Nilai Kosong (Missing)", missing_total)
+            k2.metric("Baris Duplikat", dup_total)
+            k3.metric("Kelengkapan Data", f"{((1 - missing_total / (total_pelanggan * total_kolom)) * 100):.1f}%")
+
+            kualitas_df = pd.DataFrame(
+                {
+                    "Kolom": df_mall.columns,
+                    "Tipe": [str(df_mall[c].dtype) for c in df_mall.columns],
+                    "Missing": [int(df_mall[c].isnull().sum()) for c in df_mall.columns],
+                    "Nilai Unik": [int(df_mall[c].nunique()) for c in df_mall.columns],
+                }
+            )
+            st.dataframe(kualitas_df, use_container_width=True, hide_index=True)
+
     elif halaman == "Data & Visualisasi":
         st.subheader("📊 Tabel Dataframe & Grafik Pelanggan")
         tab1, tab2 = st.tabs(["📋 Tabel Data Pelanggan", "📈 Statistik & Grafik"])
@@ -292,22 +456,6 @@ try:
                 st.success(
                     f"Data berhasil diproses! Usia: {usia} tahun | Pendapatan: ${pendapatan}k | Skor Pengeluaran: {spending}"
                 )
-
-    elif halaman == "Tentang Dataset":
-        st.subheader("ℹ️ Tentang Dataset Mall Customers")
-        st.markdown(
-            """
-            <div class="dark-card">
-                <div class="step-title">Ringkasan Dataset</div>
-                <p class="step-desc">
-                    Dataset <b>Mall_Customers.csv</b> berisi informasi dasar pelanggan seperti jenis kelamin, usia,
-                    pendapatan tahunan (dalam ribuan dolar / k$), serta skor pengeluaran (1–100) yang sering
-                    digunakan untuk latihan segmentasi pelanggan / klasterisasi.
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
 
 except Exception as e:
     st.error(f"Terjadi kesalahan saat memuat dataset: {e}")
