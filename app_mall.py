@@ -10,114 +10,107 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# CSS Kustom untuk tampilan kartu & warna yang lebih hidup namun tetap bersih
+# CSS Kustom untuk tema gelap (Dark Mode) yang modern & kontras jelas
 st.markdown(
     """
     <style>
-        /* Latar belakang utama lembut */
-        .stApp {
-            background: linear-gradient(180deg, #f4f8ff 0%, #ffffff 38%);
-        }
-
-        /* Styling sidebar */
-        section[data-testid="stSidebar"] {
-            background-color: #eef4ff;
-            border-right: 1px solid #dbe7fc;
-        }
-
-        /* Hero banner */
+        /* Hero banner gelap beraksen biru-ungu */
         .hero-box {
-            background: linear-gradient(120deg, #1d4ed8 0%, #0284c7 65%, #0ea5e9 100%);
-            color: #ffffff;
+            background: linear-gradient(125deg, #1e293b 0%, #0f172a 55%, #1e1b4b 100%);
+            border: 1px solid #334155;
+            color: #f8fafc;
             padding: 1.6rem 1.8rem;
             border-radius: 16px;
-            box-shadow: 0 10px 24px rgba(29, 78, 216, 0.14);
-            margin-bottom: 1.2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            margin-bottom: 1.3rem;
         }
         .hero-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(56, 189, 248, 0.16);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
             padding: 0.25rem 0.75rem;
             border-radius: 999px;
             font-size: 0.8rem;
             font-weight: 600;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.65rem;
         }
         .hero-title {
             font-size: 2rem;
             font-weight: 800;
+            color: #ffffff;
             margin: 0 0 0.35rem 0;
             line-height: 1.2;
         }
         .hero-sub {
             font-size: 0.98rem;
-            opacity: 0.95;
+            color: #cbd5e1;
             margin: 0;
         }
 
-        /* Kartu metrik & alur */
-        .soft-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+        /* Kartu metrik & alur tema gelap */
+        .dark-card {
+            background: #161b26;
+            border: 1px solid #2a3346;
             border-radius: 14px;
-            padding: 1.1rem 1.25rem;
-            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+            padding: 1.15rem 1.25rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
             height: 100%;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, border-color 0.15s ease;
         }
-        .soft-card:hover {
+        .dark-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+            border-color: #38bdf8;
         }
         .card-label {
-            font-size: 0.82rem;
+            font-size: 0.84rem;
             font-weight: 600;
-            color: #475569;
+            color: #94a3b8;
             margin-bottom: 0.35rem;
         }
         .card-value {
-            font-size: 1.65rem;
+            font-size: 1.7rem;
             font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 0.2rem;
+            color: #f8fafc;
+            margin-bottom: 0.25rem;
         }
         .card-note {
             font-size: 0.8rem;
-            color: #0284c7;
+            color: #38bdf8;
             font-weight: 600;
         }
         .step-num {
             display: inline-block;
-            background: #e0f2fe;
-            color: #0369a1;
+            background: rgba(99, 102, 241, 0.18);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.35);
             font-weight: 700;
-            font-size: 0.8rem;
-            padding: 0.2rem 0.6rem;
+            font-size: 0.78rem;
+            padding: 0.2rem 0.65rem;
             border-radius: 8px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.55rem;
         }
         .step-title {
-            font-size: 1rem;
+            font-size: 1.02rem;
             font-weight: 700;
-            color: #0f172a;
+            color: #f1f5f9;
             margin-bottom: 0.35rem;
         }
         .step-desc {
             font-size: 0.88rem;
-            color: #475569;
+            color: #cbd5e1;
             line-height: 1.45;
             margin: 0;
         }
 
         /* Tombol submit form */
-        div.stButton > button[kind="primaryFormSubmit"],
         div.stFormSubmitButton > button {
             background: linear-gradient(90deg, #2563eb, #0284c7);
-            color: white;
+            color: #ffffff;
             border: none;
             border-radius: 10px;
             font-weight: 600;
-            padding: 0.55rem 1.2rem;
+            padding: 0.55rem 1.25rem;
         }
     </style>
     """,
@@ -174,7 +167,7 @@ try:
         with c1:
             st.markdown(
                 f"""
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="card-label">👥 Jumlah Pelanggan</div>
                     <div class="card-value">{total_pelanggan:,}</div>
                     <div class="card-note">Data {len(df_mall.columns)} kolom</div>
@@ -185,7 +178,7 @@ try:
         with c2:
             st.markdown(
                 f"""
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="card-label">💰 Rata-rata Pendapatan</div>
                     <div class="card-value">${rata_pendapatan:.1f}k</div>
                     <div class="card-note">Annual Income</div>
@@ -196,7 +189,7 @@ try:
         with c3:
             st.markdown(
                 f"""
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="card-label">🛍️ Rata-rata Skor Belanja</div>
                     <div class="card-value">{rata_spending:.1f}</div>
                     <div class="card-note">Skala 1 – 100</div>
@@ -207,7 +200,7 @@ try:
         with c4:
             st.markdown(
                 f"""
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="card-label">🎂 Rata-rata Usia</div>
                     <div class="card-value">{rata_usia:.1f} th</div>
                     <div class="card-note">Rentang {df_mall[col_age].min()}–{df_mall[col_age].max()} tahun</div>
@@ -221,7 +214,7 @@ try:
         with s1:
             st.markdown(
                 """
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="step-num">Langkah 1</div>
                     <div class="step-title">Pemuatan Dataset</div>
                     <p class="step-desc">Membaca data pelanggan mall secara aman dengan cache agar akses cepat.</p>
@@ -232,7 +225,7 @@ try:
         with s2:
             st.markdown(
                 """
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="step-num">Langkah 2</div>
                     <div class="step-title">Observasi Fitur</div>
                     <p class="step-desc">Meninjau usia, pendapatan tahunan, dan skor pengeluaran pelanggan.</p>
@@ -243,7 +236,7 @@ try:
         with s3:
             st.markdown(
                 """
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="step-num">Langkah 3</div>
                     <div class="step-title">Visualisasi Awal</div>
                     <p class="step-desc">Membandingkan tren pendapatan dan skor belanja melalui grafik.</p>
@@ -254,7 +247,7 @@ try:
         with s4:
             st.markdown(
                 """
-                <div class="soft-card">
+                <div class="dark-card">
                     <div class="step-num">Langkah 4</div>
                     <div class="step-title">Simulasi Input</div>
                     <p class="step-desc">Menguji input data pelanggan baru untuk melihat profilnya.</p>
@@ -304,7 +297,7 @@ try:
         st.subheader("ℹ️ Tentang Dataset Mall Customers")
         st.markdown(
             """
-            <div class="soft-card">
+            <div class="dark-card">
                 <div class="step-title">Ringkasan Dataset</div>
                 <p class="step-desc">
                     Dataset <b>Mall_Customers.csv</b> berisi informasi dasar pelanggan seperti jenis kelamin, usia,
